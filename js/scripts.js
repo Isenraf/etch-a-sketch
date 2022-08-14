@@ -8,9 +8,13 @@ const gridView = {
    x: 0,
    y: 0,
    data: undefined,
+   color: "#212529",
    isDrawing: false,
    sizeButton: document.querySelector('.btn-size'),
+   eraseButton: document.querySelector('.btn-erase'),
+   paintButton: document.querySelector('.btn-paint'),
    clearButton: document.querySelector('.btn-clear'),
+   rainbowButton: document.querySelector('.btn-rainbow'),
    gContainer: document.querySelector('.grid-container'),
 
    render(data) {
@@ -21,6 +25,17 @@ const gridView = {
 
    clear() {
     this.gContainer.textContent = '';
+   },
+
+   colorRGB() {
+    const red = `${this.randomNum()}`;
+    const green = `${this.randomNum()}`;
+    const blue = `${this.randomNum()}`;
+    return `${red}, ${green}, ${blue}`;
+   },
+
+   randomNum() {
+    return  Math.floor(Math.random() * 256);
    },
 
    generateMarkup() {
@@ -53,6 +68,18 @@ const gridView = {
         this.clearButton.addEventListener('click', handle);
     },
 
+    handleErase(handle) {
+        this.eraseButton.addEventListener('click', handle);
+    },
+
+    handlePaint(handle) {
+        this.paintButton.addEventListener('click', handle);
+    },
+
+    handleRainbow(handle) {
+        this.rainbowButton.addEventListener('click', handle);
+    },
+
     handleSize(handle) {
         this.sizeButton.addEventListener('click', function() {
             const newSize = parseInt(prompt('Enter new grid size'));
@@ -80,7 +107,7 @@ const controller = {
         
         case 'mousemove':
             if(gridView.isDrawing) {
-                eventObj.target.classList.add('paint');
+                eventObj.target.style.backgroundColor = gridView.color;
                 gridView.x = eventObj.offsetX;
                 gridView.y = eventObj.offsetY;
             }
@@ -106,12 +133,30 @@ const controller = {
         gridView.clear();
         gridView.render(model.state.gridSize);
     },
+    
+    controlEraseButton() {
+        gridView.color = "#E4F3D8";
+        gridView.handleMouse(this.controlHovering);
+    },
+
+    controlPaintButton() {
+        gridView.color = "#212529";
+        gridView.handleMouse(this.controlHovering);
+    },
+
+    controlRainbow() {
+        gridView.color = `rgb(${gridView.colorRGB()})`;
+        gridView.handleMouse(this.controlHovering);
+    },
 
     init() {
         gridView.handleContentLoaded(this.controlGrid);
         gridView.handleMouse(this.controlHovering);
         gridView.handleClear(this.controlClearButton);
         gridView.handleSize(this.controlSizeButton);
+        gridView.handleErase(this.controlEraseButton.bind(this));
+        gridView.handlePaint(this.controlPaintButton.bind(this));
+        // gridView.handleRainbow(this.controlRainbow.bind(this));
     }
 };
 
