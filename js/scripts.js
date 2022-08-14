@@ -9,6 +9,7 @@ const gridView = {
    y: 0,
    data: undefined,
    color: "#212529",
+   timerId: undefined,
    isDrawing: false,
    sizeButton: document.querySelector('.btn-size'),
    eraseButton: document.querySelector('.btn-erase'),
@@ -25,6 +26,10 @@ const gridView = {
 
    clear() {
     this.gContainer.textContent = '';
+   },
+
+   clearTimer() {
+    clearInterval(this.timerId);
    },
 
    colorRGB() {
@@ -133,20 +138,26 @@ const controller = {
         gridView.clear();
         gridView.render(model.state.gridSize);
     },
-    
+
+    // contol ERASE AND PAINT are practically theysame
+    // so don't forget to refactor them inside one function
     controlEraseButton() {
+        gridView.clearTimer();
         gridView.color = "#E4F3D8";
         gridView.handleMouse(this.controlHovering);
     },
 
     controlPaintButton() {
+        gridView.clearTimer();
         gridView.color = "#212529";
         gridView.handleMouse(this.controlHovering);
     },
 
     controlRainbow() {
+       gridView.timerId = setInterval(() => {
         gridView.color = `rgb(${gridView.colorRGB()})`;
         gridView.handleMouse(this.controlHovering);
+       }, 100);
     },
 
     init() {
@@ -156,7 +167,7 @@ const controller = {
         gridView.handleSize(this.controlSizeButton);
         gridView.handleErase(this.controlEraseButton.bind(this));
         gridView.handlePaint(this.controlPaintButton.bind(this));
-        // gridView.handleRainbow(this.controlRainbow.bind(this));
+        gridView.handleRainbow(this.controlRainbow.bind(this));
     }
 };
 
