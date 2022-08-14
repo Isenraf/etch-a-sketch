@@ -1,77 +1,118 @@
-"use strict"
-
 const model = {
-    limit: 100,
-    gridSize: 16,
+    state: {
+        gridSize: 16
+    }
 };
 
-
 const gridView = {
-    init(size) {
-        this.size = size;
-        this.gContainer = document.querySelector('.grid-container');
-        this.gContainer.setAttribute("style",`grid-template-rows:repeat(${this.size}, 1fr)`);
-        this.gContainer.setAttribute("style", `grid-template-columns:repeat(${this.size}, 1fr)`);
-        
-        this.render();
-    },
+   x: 0,
+   y: 0,
+   data: undefined,
+   isDrawing: false,
+   sizeButton: document.querySelector('.btn-size'),
+   clearButton: document.querySelector('.btn-clear'),
+   gContainer: document.querySelector('.grid-container'),
 
-    render() {
-        const markup = this.generateMarkup();
-        this.gContainer.insertAdjacentHTML('beforeend', markup);
-    },
-    
+   render(data) {
+    this.data = data;
+    const markup = this.generateMarkup();
+    this.gContainer.insertAdjacentHTML('beforeend', markup);
+   },
 
-    generateMarkup() {
-        let _str = '';
-        for(let i = 1; i <= (this.size * this.size); i++) {
-            _str += `<div class="grid-item"></div>`;
-        }
-        return _str;
-    },
+   clear() {
+    this.gContainer.textContent = '';
+   },
 
-    draw() {
-        let x = 0;
-        let y = 0;
-        let isDrawing = false;
+   generateMarkup() {
+    let _string = '';
+    this.gContainer.setAttribute("style",`grid-template-rows:repeat(${this.data}, 1fr)`);
+    this.gContainer.setAttribute("style", `grid-template-columns:repeat(${this.data}, 1fr)`);
+       
+    for(let i = 1; i <= (this.data * this.data); i++) {
+        _string += `<div class="grid-item"></div>`;
+    }
 
+    return _string;
+   },
+
+    handleMouse(handle) {
         this.gContainer.addEventListener('mousedown', function(e) {
-            x = e.offsetX;
-            y = e.offsetY;
-            isDrawing = true;
-       });
+            handle(e);
+        });
 
-       this.gContainer.addEventListener('mousemove', function(e) {
-            if(isDrawing) {
-                e.target.classList = 'paint';
-                x = e.offsetX;
-                y = e.offsetY;
-            }
-       });
+        this.gContainer.addEventListener('mousemove', function(e) {
+            handle(e);
+        });
 
-       this.gContainer.addEventListener('mouseup', function(e) {
-            x = 0;
-            y = 0;
-            isDrawing = false;
-       });
+        this.gContainer.addEventListener('mouseup', function(e) {
+            handle(e);
+        });
     },
-    
+
+    handleClear(handle) {
+        this.clearButton.addEventListener('click', handle);
+    },
+
+    handleSize(handle) {
+        this.sizeButton.addEventListener('click', function() {
+            const newSize = parseInt(prompt('Enter new grid size'));
+            handle(newSize);
+        });
+    },
+   
     handleContentLoaded(handle) {
         document.addEventListener('DOMContentLoaded', handle)
     },
-
 };
 
-
 const controller = {
+    controlGrid() {
+        gridView.render(model.state.gridSize);
+    },
+
+    controlHovering(eventObj) {
+       switch(eventObj.type) {
+        case 'mousedown':
+            gridView.x = eventObj.offsetX;
+            gridView.y = eventObj.offsetY;
+            gridView.isDrawing = true;
+            break;
+        
+        case 'mousemove':
+            if(gridView.isDrawing) {
+                eventObj.target.classList.add('paint');
+                gridView.x = eventObj.offsetX;
+                gridView.y = eventObj.offsetY;
+            }
+            break;
+        
+        case 'mouseup':
+            gridView.x = 0;
+            gridView.y = 0;
+            gridView.isDrawing = false;
+            break;
+       }
+    },
+
+    controlClearButton() {
+        gridView.clear();
+        gridView.render(model.state.gridSize);
+    },
+
+    controlSizeButton(size) {
+        if(!size) return;
+
+        model.state.gridSize = size > 100? 100: size;
+        gridView.clear();
+        gridView.render(model.state.gridSize);
+    },
+
     init() {
         gridView.handleContentLoaded(this.controlGrid);
-    },
-
-    controlGrid() {
-        gridView.init(model.gridSize);
-        gridView.draw();
-    },
+        gridView.handleMouse(this.controlHovering);
+        gridView.handleClear(this.controlClearButton);
+        gridView.handleSize(this.controlSizeButton);
+    }
 };
 
 controller.init();
