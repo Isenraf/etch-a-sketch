@@ -11,7 +11,7 @@ body {
 
 main {
     width: 960px;
-    margin: 25px auto;
+    margin: 16px auto;
 
     display: flex;
 }
@@ -67,4 +67,9 @@ p {
 .btn:hover {
     cursor: pointer;
     background-color: #868e96;
+}
+
+footer {
+    display: flex;
+    justify-content: center;
 }
