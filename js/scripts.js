@@ -105,6 +105,7 @@ const controller = {
     controlHovering(eventObj) {
        switch(eventObj.type) {
         case 'mousedown':
+            eventObj.target.style.backgroundColor = gridView.color;
             gridView.x = eventObj.offsetX;
             gridView.y = eventObj.offsetY;
             gridView.isDrawing = true;
