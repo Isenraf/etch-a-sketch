@@ -11,7 +11,7 @@ body {
 
 main {
     width: 960px;
-    margin: 50px auto;
+    margin: 25px auto;
 
     display: flex;
 }
@@ -45,7 +45,8 @@ p {
 
 .grid-container {
     display: grid;
-    height: 395px;
+    width: 480px;
+    height: 480px;
     border-radius: 15px;
     background-color: #E4F3D8;
 }
